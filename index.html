@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="profile-card">
+
+    <!-- Cover photo -->
+    <div class="cover">
+      <div class="avatar-wrap">
+        <div class="avatar">
+          <span class="avatar-initials">AJ</span>
+          <img class="avatar-img" src="" alt="User avatar" style="display:none" />
+          <button class="avatar-edit-btn" aria-label="Change avatar">✏</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Name / actions -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <h1 id="display-name">Alex Johnson</h1>
+        <p class="handle" id="display-handle">@alexjohnson</p>
+        <p class="location">
+          <span aria-hidden="true">📍</span> San Francisco, CA
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" id="follow-btn">+ Follow</button>
+        <button class="btn btn-outline" id="message-btn">Message</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-value" id="stat-followers">1,284</div>
+        <div class="stat-label">Followers</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">342</div>
+        <div class="stat-label">Following</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">58</div>
+        <div class="stat-label">Posts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">12</div>
+        <div class="stat-label">Projects</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <nav class="tabs" aria-label="Profile sections">
+      <button class="tab-btn active" data-tab="about">About</button>
+      <button class="tab-btn" data-tab="posts">Posts</button>
+      <button class="tab-btn" data-tab="edit">Edit Profile</button>
+    </nav>
+
+    <!-- About -->
+    <section class="tab-panel active" id="panel-about">
+      <div class="about-grid">
+
+        <div class="about-section about-bio">
+          <h3>Bio</h3>
+          <p id="display-bio">Full-stack developer &amp; open-source enthusiast. I build
+          things for the web, write about software architecture, and
+          occasionally contribute to OSS projects. Coffee addict ☕.</p>
+        </div>
+
+        <div class="about-section">
+          <h3>Skills</h3>
+          <div class="skill-tags">
+            <span class="tag">JavaScript</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">React</span>
+            <span class="tag">Node.js</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Docker</span>
+            <span class="tag">GraphQL</span>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <h3>Links</h3>
+          <ul class="link-list">
+            <li><a href="#">🌐 alexjohnson.dev</a></li>
+            <li><a href="#">💼 linkedin.com/in/alexjohnson</a></li>
+            <li><a href="#">🐙 github.com/alexjohnson</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Posts -->
+    <section class="tab-panel" id="panel-posts">
+      <div class="post-list">
+
+        <article class="post-card">
+          <p class="post-meta">April 22, 2026 · 5 min read</p>
+          <h2 class="post-title">Building accessible React components from scratch</h2>
+          <p class="post-excerpt">A deep dive into ARIA roles, keyboard navigation,
+          and focus management — with practical before/after examples.</p>
+          <div class="post-footer">
+            <span>❤️ 148</span>
+            <span>💬 32 comments</span>
+            <span>🔖 Save</span>
+          </div>
+        </article>
+
+        <article class="post-card">
+          <p class="post-meta">April 10, 2026 · 3 min read</p>
+          <h2 class="post-title">Why I switched from REST to GraphQL — and back again</h2>
+          <p class="post-excerpt">My honest take on trade-offs after running both in
+          production for two years on the same product.</p>
+          <div class="post-footer">
+            <span>❤️ 87</span>
+            <span>💬 19 comments</span>
+            <span>🔖 Save</span>
+          </div>
+        </article>
+
+        <article class="post-card">
+          <p class="post-meta">March 28, 2026 · 7 min read</p>
+          <h2 class="post-title">Docker compose for local development — the definitive guide</h2>
+          <p class="post-excerpt">Everything from hot-reloading services to
+          persisting database volumes, in one practical walkthrough.</p>
+          <div class="post-footer">
+            <span>❤️ 203</span>
+            <span>💬 44 comments</span>
+            <span>🔖 Save</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Edit profile -->
+    <section class="tab-panel" id="panel-edit">
+      <form class="edit-form" id="edit-form">
+
+        <div class="form-group">
+          <label for="field-name">Display name</label>
+          <input id="field-name" name="name" type="text"
+                 placeholder="Alex Johnson" />
+        </div>
+
+        <div class="form-group">
+          <label for="field-handle">Username</label>
+          <input id="field-handle" name="handle" type="text"
+                 placeholder="alexjohnson" />
+        </div>
+
+        <div class="form-group">
+          <label for="field-bio">Bio</label>
+          <textarea id="field-bio" name="bio" rows="4"
+                    placeholder="Tell the world a little about yourself…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="field-location">Location</label>
+          <input id="field-location" name="location" type="text"
+                 placeholder="San Francisco, CA" />
+        </div>
+
+        <div class="form-group">
+          <label for="field-website">Website</label>
+          <input id="field-website" name="website" type="url"
+                 placeholder="https://yoursite.com" />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-outline" id="cancel-edit">Cancel</button>
+        </div>
+
+      </form>
+    </section>
+
+  </div><!-- /.profile-card -->
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
