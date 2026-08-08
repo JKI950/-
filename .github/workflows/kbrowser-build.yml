@@ -1,0 +1,42 @@
+name: Build KBrowser EXE
+
+on:
+  push:
+    branches: [ chatgpt-kbrowser-build ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: kbrowser-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: kbrowser-build/package.json
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build portable EXE
+        run: npm run dist
+      - name: Verify EXE
+        shell: pwsh
+        run: |
+          if (!(Test-Path 'dist/KBrowser.exe')) { throw 'KBrowser.exe not found' }
+          Get-Item 'dist/KBrowser.exe' | Format-List Name,Length,LastWriteTime
+          Get-FileHash 'dist/KBrowser.exe' -Algorithm SHA256
+      - name: Upload KBrowser
+        uses: actions/upload-artifact@v4
+        with:
+          name: KBrowser-Windows-x64
+          path: kbrowser-build/dist/KBrowser.exe
+          if-no-files-found: error
+          compression-level: 0
