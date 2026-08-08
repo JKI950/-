@@ -6,22 +6,16 @@
   "main": "main.js",
   "author": "KBrowser",
   "license": "UNLICENSED",
-  "scripts": {
-    "dist": "electron-builder --win portable --x64"
-  },
-  "devDependencies": {
-    "electron": "43.3.0",
-    "electron-builder": "26.0.12"
-  },
+  "scripts": {"dist": "electron-builder --win portable --x64"},
+  "devDependencies": {"electron": "43.3.0", "electron-builder": "26.0.12"},
   "build": {
     "appId": "com.kbrowser.app",
     "productName": "KBrowser",
     "asar": true,
-    "files": ["main.js", "preload.js", "ui/**/*", "assets/**/*", "package.json"],
+    "files": ["main.js", "preload.js", "index.html", "package.json"],
     "win": {
-      "target": [{"target":"portable","arch":["x64"]}],
-      "artifactName": "KBrowser.exe",
-      "icon": "assets/KBrowser.ico"
+      "target": [{"target": "portable", "arch": ["x64"]}],
+      "artifactName": "KBrowser.exe"
     }
   }
 }
