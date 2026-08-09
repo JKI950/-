@@ -1,26 +1,49 @@
 {
   "name": "kbrowser",
   "productName": "KBrowser",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Classic-style Chromium browser",
   "main": "main.js",
   "author": "KBrowser",
   "license": "UNLICENSED",
   "scripts": {
-    "dist": "electron-builder --win dir --x64"
+    "make-icon": "node make-icon.js",
+    "dist": "electron-builder --win nsis --x64"
   },
   "devDependencies": {
     "electron": "43.3.0",
-    "electron-builder": "26.0.12"
+    "electron-builder": "26.0.12",
+    "png-to-ico": "2.1.8"
   },
   "build": {
     "appId": "com.kbrowser.app",
     "productName": "KBrowser",
     "asar": true,
-    "files": ["main.js", "preload.js", "index.html", "package.json", "icon.ico"],
+    "files": [
+      "main.js",
+      "preload.js",
+      "guest-preload.js",
+      "index.html",
+      "package.json",
+      "icon.ico"
+    ],
     "win": {
       "icon": "icon.ico",
-      "target": [{"target": "dir", "arch": ["x64"]}]
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "KBrowser-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "KBrowser"
     }
   }
 }
