@@ -18,6 +18,23 @@ function findUsername(form, passwordInput) {
   return '';
 }
 
+// Sites such as Naver/Daum often use target=_blank. Intercept the click before
+// Chromium creates an empty popup and ask the host browser to create a real tab.
+document.addEventListener('click', (event) => {
+  try {
+    if (event.defaultPrevented || event.button !== 0) return;
+    const a = event.target?.closest?.('a[href]');
+    if (!a) return;
+    const target = String(a.target || '').toLowerCase();
+    if (target !== '_blank') return;
+    const url = new URL(a.href, location.href).href;
+    if (!/^https?:/i.test(url)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    ipcRenderer.sendToHost('open-url-in-tab', url);
+  } catch {}
+}, true);
+
 document.addEventListener('submit', (event) => {
   try {
     const form = event.target;
