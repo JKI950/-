@@ -36,7 +36,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force 'kbrowser-win/dist/portable' | Out-Null
-          Copy-Item 'kbrowser-win/bin/Release/net48/*' 'kbrowser-win/dist/portable/' -Recurse -Force
+          Copy-Item 'kbrowser-win/bin/x64/Release/net48/*' 'kbrowser-win/dist/portable/' -Recurse -Force
           if (!(Test-Path 'kbrowser-win/dist/portable/KBrowser.exe')) { throw 'KBrowser.exe not found' }
           Compress-Archive -Path 'kbrowser-win/dist/portable/*' -DestinationPath 'kbrowser-win/dist/KBrowser-1.0.0-Portable.zip' -Force
 
