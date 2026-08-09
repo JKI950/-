@@ -12,6 +12,7 @@ namespace KBrowser
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             AppPaths.Initialize();
+            FeaturePatch.EnableGlobal();
             Application.Run(new MainForm(false));
         }
     }
