@@ -1,8 +1,8 @@
-name: Build KBrowser EXE
+name: Build KBrowser Windows
 
 on:
   push:
-    branches: [ chatgpt-kbrowser-build ]
+    branches: [ chatgpt-kbrowser-build, chatgpt-kbrowser-speed-bookmarks ]
   workflow_dispatch:
 
 permissions:
@@ -17,26 +17,54 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: kbrowser-build/package.json
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Build portable EXE
-        run: npm run dist
-      - name: Verify EXE
+
+      - name: Decode provided logo and create 256px PNG
         shell: pwsh
         run: |
-          if (!(Test-Path 'dist/KBrowser.exe')) { throw 'KBrowser.exe not found' }
-          Get-Item 'dist/KBrowser.exe' | Format-List Name,Length,LastWriteTime
-          Get-FileHash 'dist/KBrowser.exe' -Algorithm SHA256
-      - name: Upload KBrowser
+          $b64 = (Get-Content 'icon.ico.b64' -Raw).Trim()
+          [IO.File]::WriteAllBytes('icon-source.ico', [Convert]::FromBase64String($b64))
+          Add-Type -AssemblyName System.Drawing
+          $icon = New-Object System.Drawing.Icon((Resolve-Path 'icon-source.ico'))
+          $bmp = New-Object System.Drawing.Bitmap 256,256
+          $g = [System.Drawing.Graphics]::FromImage($bmp)
+          $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+          $g.Clear([System.Drawing.Color]::Transparent)
+          $g.DrawIcon($icon, (New-Object System.Drawing.Rectangle 0,0,256,256))
+          $bmp.Save((Join-Path (Get-Location) 'icon-256.png'), [System.Drawing.Imaging.ImageFormat]::Png)
+          $g.Dispose(); $bmp.Dispose(); $icon.Dispose()
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Generate Windows icon
+        run: npm run make-icon
+
+      - name: Build KBrowser
+        run: npm run dist
+
+      - name: Verify build
+        shell: pwsh
+        run: |
+          if (!(Test-Path 'dist/win-unpacked/KBrowser.exe')) { throw 'win-unpacked/KBrowser.exe not found' }
+          $setup = Get-ChildItem 'dist/KBrowser-Setup-*.exe' | Select-Object -First 1
+          if (!$setup) { throw 'KBrowser setup EXE not found' }
+          Get-Item 'dist/win-unpacked/KBrowser.exe' | Format-List Name,Length,LastWriteTime
+          Get-FileHash 'dist/win-unpacked/KBrowser.exe' -Algorithm SHA256
+          Get-Item $setup.FullName | Format-List Name,Length,LastWriteTime
+
+      - name: Upload KBrowser Windows x64
         uses: actions/upload-artifact@v4
         with:
           name: KBrowser-Windows-x64
-          path: kbrowser-build/dist/KBrowser.exe
+          path: |
+            kbrowser-build/dist/KBrowser-Setup-*.exe
+            kbrowser-build/dist/win-unpacked/**
           if-no-files-found: error
-          compression-level: 0
+          compression-level: 6
