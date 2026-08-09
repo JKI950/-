@@ -1,0 +1,75 @@
+name: Build KBrowser Win10-11 Native
+
+on:
+  push:
+    branches: [ chatgpt-kbrowser-win10-11-rebuild ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Decode KBrowser icon
+        shell: pwsh
+        run: |
+          $b64 = (Get-Content 'kbrowser-build/icon.ico.b64' -Raw).Trim()
+          [IO.File]::WriteAllBytes('kbrowser-win/icon.ico', [Convert]::FromBase64String($b64))
+
+      - name: Restore
+        run: dotnet restore kbrowser-win/KBrowser.csproj
+
+      - name: Build native KBrowser
+        run: dotnet build kbrowser-win/KBrowser.csproj -c Release --no-restore -p:Platform=x64
+
+      - name: Prepare portable folder
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force 'kbrowser-win/dist/portable' | Out-Null
+          Copy-Item 'kbrowser-win/bin/Release/net48/*' 'kbrowser-win/dist/portable/' -Recurse -Force
+          if (!(Test-Path 'kbrowser-win/dist/portable/KBrowser.exe')) { throw 'KBrowser.exe not found' }
+          Compress-Archive -Path 'kbrowser-win/dist/portable/*' -DestinationPath 'kbrowser-win/dist/KBrowser-1.0.0-Portable.zip' -Force
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          if (!(Get-Command iscc.exe -ErrorAction SilentlyContinue)) {
+            choco install innosetup --no-progress -y
+          }
+
+      - name: Build installer EXE
+        shell: pwsh
+        run: |
+          $iscc = (Get-Command iscc.exe -ErrorAction SilentlyContinue).Source
+          if (!$iscc) { $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' }
+          if (!(Test-Path $iscc)) { throw 'ISCC.exe not found' }
+          & $iscc 'kbrowser-win\installer.iss'
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed: $LASTEXITCODE" }
+          if (!(Test-Path 'kbrowser-win/dist/KBrowser-Setup-1.0.0.exe')) { throw 'Setup EXE not found' }
+
+      - name: Verify files
+        shell: pwsh
+        run: |
+          Get-Item 'kbrowser-win/dist/KBrowser-Setup-1.0.0.exe' | Format-List Name,Length,LastWriteTime
+          Get-FileHash 'kbrowser-win/dist/KBrowser-Setup-1.0.0.exe' -Algorithm SHA256
+          Get-Item 'kbrowser-win/dist/KBrowser-1.0.0-Portable.zip' | Format-List Name,Length,LastWriteTime
+
+      - name: Upload KBrowser native Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: KBrowser-Win10-11-Native-x64
+          path: |
+            kbrowser-win/dist/KBrowser-Setup-1.0.0.exe
+            kbrowser-win/dist/KBrowser-1.0.0-Portable.zip
+          if-no-files-found: error
+          compression-level: 0
