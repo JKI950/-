@@ -7,5 +7,7 @@ contextBridge.exposeInMainWorld('kbrowserHost', {
   saveCompletePage: (contentsId) => ipcRenderer.invoke('save-complete-page', contentsId),
   startCapture: (contentsId) => ipcRenderer.invoke('capture-start', contentsId),
   stopCapture: (contentsId) => ipcRenderer.invoke('capture-stop', contentsId),
-  isRecording: (contentsId) => ipcRenderer.invoke('capture-is-recording', contentsId)
+  isRecording: (contentsId) => ipcRenderer.invoke('capture-is-recording', contentsId),
+  getDownloadDirectory: () => ipcRenderer.invoke('download-directory-get'),
+  chooseDownloadDirectory: () => ipcRenderer.invoke('download-directory-choose')
 });
