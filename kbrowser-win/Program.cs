@@ -23,6 +23,7 @@ namespace KBrowser
         public static string UserDataDirectory { get; private set; }
         public static string SettingsFile => Path.Combine(DataDirectory, "settings.json");
         public static string BookmarksFile => Path.Combine(DataDirectory, "bookmarks.json");
+        public static string HiddenRulesFile => Path.Combine(DataDirectory, "blocked-elements.json");
 
         public static void Initialize()
         {
