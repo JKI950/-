@@ -2,7 +2,7 @@ name: Build KBrowser Win10-11 Native
 
 on:
   push:
-    branches: [ chatgpt-kbrowser-win10-11-rebuild ]
+    branches: [ chatgpt-kbrowser-win10-11-rebuild, chatgpt-kbrowser-1-2-enhancements ]
   workflow_dispatch:
 
 permissions:
@@ -40,7 +40,7 @@ jobs:
           New-Item -ItemType Directory -Force 'kbrowser-win/dist/portable' | Out-Null
           Copy-Item "$buildDir/*" 'kbrowser-win/dist/portable/' -Recurse -Force
           if (!(Test-Path 'kbrowser-win/dist/portable/KBrowser.exe')) { throw 'KBrowser.exe not found' }
-          Compress-Archive -Path 'kbrowser-win/dist/portable/*' -DestinationPath 'kbrowser-win/dist/KBrowser-1.1.0-Portable.zip' -Force
+          Compress-Archive -Path 'kbrowser-win/dist/portable/*' -DestinationPath 'kbrowser-win/dist/KBrowser-1.2.0-Portable.zip' -Force
 
       - name: Install Inno Setup
         shell: pwsh
@@ -57,21 +57,21 @@ jobs:
           if (!(Test-Path $iscc)) { throw 'ISCC.exe not found' }
           & $iscc 'kbrowser-win\installer.iss'
           if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed: $LASTEXITCODE" }
-          if (!(Test-Path 'kbrowser-win/dist/KBrowser-Setup-1.1.0.exe')) { throw 'Setup EXE not found' }
+          if (!(Test-Path 'kbrowser-win/dist/KBrowser-Setup-1.2.0.exe')) { throw 'Setup EXE not found' }
 
       - name: Verify files
         shell: pwsh
         run: |
-          Get-Item 'kbrowser-win/dist/KBrowser-Setup-1.1.0.exe' | Format-List Name,Length,LastWriteTime
-          Get-FileHash 'kbrowser-win/dist/KBrowser-Setup-1.1.0.exe' -Algorithm SHA256
-          Get-Item 'kbrowser-win/dist/KBrowser-1.1.0-Portable.zip' | Format-List Name,Length,LastWriteTime
+          Get-Item 'kbrowser-win/dist/KBrowser-Setup-1.2.0.exe' | Format-List Name,Length,LastWriteTime
+          Get-FileHash 'kbrowser-win/dist/KBrowser-Setup-1.2.0.exe' -Algorithm SHA256
+          Get-Item 'kbrowser-win/dist/KBrowser-1.2.0-Portable.zip' | Format-List Name,Length,LastWriteTime
 
       - name: Upload KBrowser native Windows build
         uses: actions/upload-artifact@v4
         with:
-          name: KBrowser-Win10-11-Native-x64
+          name: KBrowser-1.2.0-Win10-11-Native-x64
           path: |
-            kbrowser-win/dist/KBrowser-Setup-1.1.0.exe
-            kbrowser-win/dist/KBrowser-1.1.0-Portable.zip
+            kbrowser-win/dist/KBrowser-Setup-1.2.0.exe
+            kbrowser-win/dist/KBrowser-1.2.0-Portable.zip
           if-no-files-found: error
           compression-level: 0
