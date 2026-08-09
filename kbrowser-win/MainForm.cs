@@ -1314,7 +1314,7 @@ namespace KBrowser
      if(u&&media.indexOf(u)<0)media.push(u);
      try{
        var bg=getComputedStyle(n).backgroundImage||'';
-       var re=/url\([\"']?([^\"')]+)[\"']?\)/g,m;
+       var re=/url\([""']?([^""')]+)[""']?\)/g,m;
        while((m=re.exec(bg))){var a=new URL(m[1],location.href).href;if(media.indexOf(a)<0)media.push(a);}
      }catch(_){}
    });
