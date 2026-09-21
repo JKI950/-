@@ -1,0 +1,40 @@
+name: Export Android Build Tools
+
+on:
+  push:
+    branches:
+      - keep-memo-android-build
+    paths:
+      - .github/workflows/export-android-tools.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          SDK=/usr/local/lib/android/sdk
+          SDKMANAGER="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Package tools
+        shell: bash
+        run: |
+          SDK=/usr/local/lib/android/sdk
+          mkdir -p android-tools/build-tools android-tools/platforms/android-35
+          cp -a "$SDK/build-tools/35.0.0" android-tools/build-tools/
+          cp "$SDK/platforms/android-35/android.jar" android-tools/platforms/android-35/
+          zip -qr android-tools.zip android-tools
+
+      - name: Upload tools
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-tools-35
+          path: android-tools.zip
+          if-no-files-found: error
