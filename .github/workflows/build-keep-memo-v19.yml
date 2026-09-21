@@ -1,0 +1,77 @@
+name: Build Keep Memo v19 APK
+
+on:
+  push:
+    branches:
+      - keep-memo-android-build
+    paths:
+      - apkbuild/v19_source.part00
+      - apkbuild/v19_source.part01
+      - apkbuild/v19_source.part02
+      - apkbuild/v19_source.part03
+      - .github/workflows/build-keep-memo-v19.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source chunks
+        uses: actions/checkout@v4
+        with:
+          ref: keep-memo-android-build
+
+      - name: Rebuild Android source ZIP
+        shell: bash
+        run: |
+          cat apkbuild/v19_source.part00               apkbuild/v19_source.part01               apkbuild/v19_source.part02               apkbuild/v19_source.part03 > /tmp/keepmemo.b64
+          base64 -d /tmp/keepmemo.b64 > /tmp/Keep_Memo_v1_Android_Source.zip
+          mkdir -p /tmp/keepmemo-src
+          unzip -q /tmp/Keep_Memo_v1_Android_Source.zip -d /tmp/keepmemo-src
+          test -f "/tmp/keepmemo-src/Keep_Memo_v1_Android_Source/app/build.gradle"
+          cp -a "/tmp/keepmemo-src/Keep_Memo_v1_Android_Source" ./Keep_Memo_Android
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Build installable APK
+        working-directory: Keep_Memo_Android
+        shell: bash
+        run: |
+          gradle :app:assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk "../Keep Memo.apk"
+
+      - name: Check APK
+        shell: bash
+        run: |
+          test -s "Keep Memo.apk"
+          unzip -t "Keep Memo.apk" >/dev/null
+          sha256sum "Keep Memo.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Keep_Memo_v1_v19
+          path: Keep Memo.apk
+          if-no-files-found: error
