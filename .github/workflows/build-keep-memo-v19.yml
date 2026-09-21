@@ -29,7 +29,7 @@ jobs:
       - name: Rebuild Android source ZIP
         shell: bash
         run: |
-          cat apkbuild/v19_source.part00               apkbuild/v19_source.part01               apkbuild/v19_source.part02               apkbuild/v19_source.part03 > /tmp/keepmemo.b64
+          cat apkbuild/v19_source.part00 apkbuild/v19_source.part01a apkbuild/v19_source.part01b apkbuild/v19_source.part02 apkbuild/v19_source.part03 > /tmp/keepmemo.b64
           base64 -d /tmp/keepmemo.b64 > /tmp/Keep_Memo_v1_Android_Source.zip
           mkdir -p /tmp/keepmemo-src
           unzip -q /tmp/Keep_Memo_v1_Android_Source.zip -d /tmp/keepmemo-src
