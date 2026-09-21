@@ -6,7 +6,8 @@ on:
       - keep-memo-android-build
     paths:
       - apkbuild/v19_source.part00
-      - apkbuild/v19_source.part01
+      - apkbuild/v19_source.part01a
+      - apkbuild/v19_source.part01b
       - apkbuild/v19_source.part02
       - apkbuild/v19_source.part03
       - .github/workflows/build-keep-memo-v19.yml
