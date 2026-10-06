@@ -1,0 +1,19 @@
+name: temp-nsis-win
+on:
+  push:
+    branches: [chatgpt-temp-nsis-win]
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download portable NSIS
+        run: |
+          set -eux
+          curl -fL --retry 3 -o nsis.zip https://github.com/tauri-apps/binary-releases/releases/download/nsis-3.11/nsis-3.11.zip
+          unzip -q nsis.zip -d out
+          find out -maxdepth 2 -type f | head -80
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nsis-3.11-win
+          path: out
+          retention-days: 1
