@@ -1,0 +1,23 @@
+name: temp-7za2604
+on:
+  push:
+    branches: [chatgpt-temp-7za2604]
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          set -eux
+          curl -fL --retry 3 -o extra.7z https://github.com/ip7z/7zip/releases/download/26.04/7z2604-extra.7z
+          sudo apt-get update
+          sudo apt-get install -y p7zip-full
+          mkdir ext out
+          7z x -y extra.7z -oext >/dev/null
+          find ext -type f | sort
+          if [ -f ext/x64/7za.exe ]; then cp ext/x64/7za.exe out/7za.exe; else cp ext/7za.exe out/7za.exe; fi
+          sha256sum out/7za.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 7za-win-x64
+          path: out/7za.exe
+          retention-days: 1
