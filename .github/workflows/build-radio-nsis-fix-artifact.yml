@@ -11,251 +11,251 @@ jobs:
         run: |
           mkdir -p patch/installer
           cat > patch/BUILD_EXE_INSTALLER_NSIS.CMD <<'__CMD__'
-@echo off
-setlocal EnableExtensions
-cd /d "%~dp0"
-title 88Park Radio NSIS Installer Builder v1.5.5.1
-
-echo ============================================================
-echo 88Park Radio v1.5.5.1 - NSIS Installer Builder
-echo 7-Zip SFX / npm / electron-builder are NOT used
-echo ============================================================
-echo.
-
-set "ROOT=%CD%"
-set "TOOLS=%ROOT%\tools\nsis-3.11"
-set "NSIS_ZIP=%ROOT%\tools\nsis-3.11.zip"
-set "MAKENSIS="
-set "DIST=%ROOT%\dist"
-set "RUNTIME="
-
-for %%D in (
-  "%ROOT%\runtime"
-  "%ROOT%\App"
-  "%ROOT%\88ParkRadio_App"
-  "%ROOT%\win-unpacked"
-  "%ROOT%\dist\win-unpacked"
-  "%ROOT%\runtime_v1.5.5"
-  "%ROOT%\runtime_v155"
-) do (
-  if not defined RUNTIME if exist "%%~D\resources\app.asar" set "RUNTIME=%%~D"
-)
-
-if defined RADIO_RUNTIME_DIR set "RUNTIME=%RADIO_RUNTIME_DIR%"
-
-if not defined RUNTIME (
-  for /f "usebackq delims=" %%D in (\`powershell.exe -NoProfile -Command "$root=[IO.Path]::GetFullPath('%ROOT%'); $f=Get-ChildItem -LiteralPath $root -Filter app.asar -File -Recurse -ErrorAction SilentlyContinue ^| Where-Object { $_.Directory.Name -eq 'resources' -and $_.FullName -notmatch '\\node_modules\\' } ^| Select-Object -First 1; if($f){$f.Directory.Parent.FullName}"\`) do set "RUNTIME=%%D"
-)
-
-if not defined RUNTIME (
-  echo [ERROR] A completed Electron runtime folder was not found.
-  echo The folder must contain resources\app.asar and the 88Park Radio EXE.
-  pause
-  exit /b 1
-)
-
-if not exist "%RUNTIME%\resources\app.asar" (
-  echo [ERROR] resources\app.asar is missing:
-  echo "%RUNTIME%"
-  pause
-  exit /b 1
-)
-
-echo [OK] Runtime:
-echo "%RUNTIME%"
-echo.
-
-if not exist "%ROOT%\tools" mkdir "%ROOT%\tools"
-if not exist "%TOOLS%" mkdir "%TOOLS%"
-
-for /r "%TOOLS%" %%F in (makensis.exe) do (
-  if not defined MAKENSIS set "MAKENSIS=%%~fF"
-)
-
-if not defined MAKENSIS (
-  echo [1/4] Downloading portable NSIS 3.11...
-  powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/tauri-apps/binary-releases/releases/download/nsis-3.11/nsis-3.11.zip' -OutFile '%NSIS_ZIP%'"
-  if errorlevel 1 (
-    echo [ERROR] Failed to download portable NSIS.
-    pause
-    exit /b 1
-  )
-
-  echo Extracting portable NSIS...
-  powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "if(Test-Path -LiteralPath '%TOOLS%'){Remove-Item -LiteralPath '%TOOLS%' -Recurse -Force}; New-Item -ItemType Directory -Path '%TOOLS%' -Force ^| Out-Null; Expand-Archive -LiteralPath '%NSIS_ZIP%' -DestinationPath '%TOOLS%' -Force"
-  if errorlevel 1 (
-    echo [ERROR] Failed to extract portable NSIS.
-    pause
-    exit /b 1
-  )
-
-  for /r "%TOOLS%" %%F in (makensis.exe) do (
-    if not defined MAKENSIS set "MAKENSIS=%%~fF"
-  )
-) else (
-  echo [1/4] Portable NSIS is ready.
-)
-
-if not defined MAKENSIS (
-  echo [ERROR] makensis.exe was not found.
-  pause
-  exit /b 1
-)
-
-if not exist "%DIST%" mkdir "%DIST%"
-
-echo [2/4] Preparing installer...
-echo [3/4] Building NSIS installer...
-"%MAKENSIS%" /DAPP_RUNTIME_DIR="%RUNTIME%" /DOUT_DIR="%DIST%" "%ROOT%\installer\88Park_Radio_Installer.nsi"
-if errorlevel 1 (
-  echo.
-  echo [ERROR] NSIS installer build failed.
-  pause
-  exit /b 1
-)
-
-echo [4/4] Checking output...
-if not exist "%DIST%\88Park_Radio_Setup_v1.5.5.1.exe" (
-  echo [ERROR] Output installer was not created.
-  pause
-  exit /b 1
-)
-
-echo.
-echo ============================================================
-echo SUCCESS
-echo "%DIST%\88Park_Radio_Setup_v1.5.5.1.exe"
-echo ============================================================
-echo.
-echo This installer does NOT use 7-Zip SFX.
-pause
-exit /b 0
-
-__CMD__
+          @echo off
+          setlocal EnableExtensions
+          cd /d "%~dp0"
+          title 88Park Radio NSIS Installer Builder v1.5.5.1
+          
+          echo ============================================================
+          echo 88Park Radio v1.5.5.1 - NSIS Installer Builder
+          echo 7-Zip SFX / npm / electron-builder are NOT used
+          echo ============================================================
+          echo.
+          
+          set "ROOT=%CD%"
+          set "TOOLS=%ROOT%\tools\nsis-3.11"
+          set "NSIS_ZIP=%ROOT%\tools\nsis-3.11.zip"
+          set "MAKENSIS="
+          set "DIST=%ROOT%\dist"
+          set "RUNTIME="
+          
+          for %%D in (
+            "%ROOT%\runtime"
+            "%ROOT%\App"
+            "%ROOT%\88ParkRadio_App"
+            "%ROOT%\win-unpacked"
+            "%ROOT%\dist\win-unpacked"
+            "%ROOT%\runtime_v1.5.5"
+            "%ROOT%\runtime_v155"
+          ) do (
+            if not defined RUNTIME if exist "%%~D\resources\app.asar" set "RUNTIME=%%~D"
+          )
+          
+          if defined RADIO_RUNTIME_DIR set "RUNTIME=%RADIO_RUNTIME_DIR%"
+          
+          if not defined RUNTIME (
+            for /f "usebackq delims=" %%D in (`powershell.exe -NoProfile -Command "$root=[IO.Path]::GetFullPath('%ROOT%'); $f=Get-ChildItem -LiteralPath $root -Filter app.asar -File -Recurse -ErrorAction SilentlyContinue ^| Where-Object { $_.Directory.Name -eq 'resources' -and $_.FullName -notmatch '\\node_modules\\' } ^| Select-Object -First 1; if($f){$f.Directory.Parent.FullName}"`) do set "RUNTIME=%%D"
+          )
+          
+          if not defined RUNTIME (
+            echo [ERROR] A completed Electron runtime folder was not found.
+            echo The folder must contain resources\app.asar and the 88Park Radio EXE.
+            pause
+            exit /b 1
+          )
+          
+          if not exist "%RUNTIME%\resources\app.asar" (
+            echo [ERROR] resources\app.asar is missing:
+            echo "%RUNTIME%"
+            pause
+            exit /b 1
+          )
+          
+          echo [OK] Runtime:
+          echo "%RUNTIME%"
+          echo.
+          
+          if not exist "%ROOT%\tools" mkdir "%ROOT%\tools"
+          if not exist "%TOOLS%" mkdir "%TOOLS%"
+          
+          for /r "%TOOLS%" %%F in (makensis.exe) do (
+            if not defined MAKENSIS set "MAKENSIS=%%~fF"
+          )
+          
+          if not defined MAKENSIS (
+            echo [1/4] Downloading portable NSIS 3.11...
+            powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/tauri-apps/binary-releases/releases/download/nsis-3.11/nsis-3.11.zip' -OutFile '%NSIS_ZIP%'"
+            if errorlevel 1 (
+              echo [ERROR] Failed to download portable NSIS.
+              pause
+              exit /b 1
+            )
+          
+            echo Extracting portable NSIS...
+            powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "if(Test-Path -LiteralPath '%TOOLS%'){Remove-Item -LiteralPath '%TOOLS%' -Recurse -Force}; New-Item -ItemType Directory -Path '%TOOLS%' -Force ^| Out-Null; Expand-Archive -LiteralPath '%NSIS_ZIP%' -DestinationPath '%TOOLS%' -Force"
+            if errorlevel 1 (
+              echo [ERROR] Failed to extract portable NSIS.
+              pause
+              exit /b 1
+            )
+          
+            for /r "%TOOLS%" %%F in (makensis.exe) do (
+              if not defined MAKENSIS set "MAKENSIS=%%~fF"
+            )
+          ) else (
+            echo [1/4] Portable NSIS is ready.
+          )
+          
+          if not defined MAKENSIS (
+            echo [ERROR] makensis.exe was not found.
+            pause
+            exit /b 1
+          )
+          
+          if not exist "%DIST%" mkdir "%DIST%"
+          
+          echo [2/4] Preparing installer...
+          echo [3/4] Building NSIS installer...
+          "%MAKENSIS%" /DAPP_RUNTIME_DIR="%RUNTIME%" /DOUT_DIR="%DIST%" "%ROOT%\installer\88Park_Radio_Installer.nsi"
+          if errorlevel 1 (
+            echo.
+            echo [ERROR] NSIS installer build failed.
+            pause
+            exit /b 1
+          )
+          
+          echo [4/4] Checking output...
+          if not exist "%DIST%\88Park_Radio_Setup_v1.5.5.1.exe" (
+            echo [ERROR] Output installer was not created.
+            pause
+            exit /b 1
+          )
+          
+          echo.
+          echo ============================================================
+          echo SUCCESS
+          echo "%DIST%\88Park_Radio_Setup_v1.5.5.1.exe"
+          echo ============================================================
+          echo.
+          echo This installer does NOT use 7-Zip SFX.
+          pause
+          exit /b 0
+          
+          __CMD__
           cat > patch/installer/88Park_Radio_Installer.nsi <<'__NSI__'
-Unicode true
-RequestExecutionLevel admin
-SetCompressor /SOLID lzma
-SetCompressorDictSize 32
-
-!ifndef APP_RUNTIME_DIR
-  !error "APP_RUNTIME_DIR is not defined."
-!endif
-
-!ifndef OUT_DIR
-  !define OUT_DIR "."
-!endif
-
-!define PRODUCT_NAME "88Park Radio"
-!define PRODUCT_VERSION "1.5.5.1"
-
-Name "\${PRODUCT_NAME}"
-Caption "\${PRODUCT_NAME} 설치"
-OutFile "\${OUT_DIR}\88Park_Radio_Setup_v1.5.5.1.exe"
-InstallDir "$PROGRAMFILES64\88Park Radio"
-InstallDirRegKey HKLM "Software\88Park Radio" "InstallDir"
-BrandingText "88Park Radio"
-
-VIProductVersion "1.5.5.1"
-VIAddVersionKey "ProductName" "\${PRODUCT_NAME}"
-VIAddVersionKey "ProductVersion" "\${PRODUCT_VERSION}"
-VIAddVersionKey "CompanyName" "88Park"
-VIAddVersionKey "FileDescription" "88Park Radio Installer"
-VIAddVersionKey "FileVersion" "\${PRODUCT_VERSION}"
-
-Page directory
-Page instfiles
-UninstPage uninstConfirm
-UninstPage instfiles
-
-Section "88Park Radio" SEC_MAIN
-  SetShellVarContext all
-  SetOutPath "$INSTDIR"
-
-  ; 완성된 Electron 앱 폴더를 설치 EXE 안에 직접 포함합니다.
-  ; 7-Zip SFX / RunProgram / SFX용 install.ps1을 사용하지 않습니다.
-  File /r "\${APP_RUNTIME_DIR}\*.*"
-
-  ; 설정, 즐겨찾기, 알람 데이터는 설치 폴더 안에 기록합니다.
-  CreateDirectory "$INSTDIR\88ParkRadio_Data"
-  nsExec::ExecToLog 'icacls "$INSTDIR\88ParkRadio_Data" /grant *S-1-5-32-545:(OI)(CI)M /T /C'
-
-  StrCpy $0 ""
-  IfFileExists "$INSTDIR\88Park Radio.exe" 0 +3
-    StrCpy $0 "88Park Radio.exe"
-    Goto exe_ok
-  IfFileExists "$INSTDIR\88Park_Radio_Portable.exe" 0 +3
-    StrCpy $0 "88Park_Radio_Portable.exe"
-    Goto exe_ok
-
-  MessageBox MB_ICONSTOP|MB_OK "88Park Radio 실행 파일을 찾지 못했습니다."
-  Abort
-
-exe_ok:
-  WriteRegStr HKLM "Software\88Park Radio" "InstallDir" "$INSTDIR"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\88Park Radio" "DisplayName" "\${PRODUCT_NAME}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\88Park Radio" "DisplayVersion" "\${PRODUCT_VERSION}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\88Park Radio" "Publisher" "88Park"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\88Park Radio" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\88Park Radio" "UninstallString" '"$INSTDIR\Uninstall.exe"'
-
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
-  CreateDirectory "$SMPROGRAMS\88Park Radio"
-  CreateShortcut "$SMPROGRAMS\88Park Radio\88Park Radio.lnk" "$INSTDIR\$0"
-  CreateShortcut "$DESKTOP\88Park Radio.lnk" "$INSTDIR\$0"
-
-  MessageBox MB_YESNO|MB_ICONQUESTION "설치가 완료되었습니다.$\r$\n지금 88Park Radio를 실행하시겠습니까?" IDNO done
-  Exec '"$INSTDIR\$0"'
-done:
-SectionEnd
-
-Section "Uninstall"
-  SetShellVarContext all
-  StrCpy $0 "0"
-  IfFileExists "$INSTDIR\88ParkRadio_Data\*.*" 0 remove_all
-  MessageBox MB_YESNO|MB_ICONQUESTION "즐겨찾기, 알람, 취침 예약 등 사용자 데이터도 삭제하시겠습니까?" IDYES remove_all
-  StrCpy $0 "1"
-  Rename "$INSTDIR\88ParkRadio_Data" "$TEMP\88ParkRadio_Data_keep"
-
-remove_all:
-  Delete "$DESKTOP\88Park Radio.lnk"
-  RMDir /r "$SMPROGRAMS\88Park Radio"
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\88Park Radio"
-  DeleteRegKey HKLM "Software\88Park Radio"
-  RMDir /r "$INSTDIR"
-
-  StrCmp $0 "1" 0 uninstall_done
-  CreateDirectory "$INSTDIR"
-  Rename "$TEMP\88ParkRadio_Data_keep" "$INSTDIR\88ParkRadio_Data"
-
-uninstall_done:
-SectionEnd
-
-__NSI__
+          Unicode true
+          RequestExecutionLevel admin
+          SetCompressor /SOLID lzma
+          SetCompressorDictSize 32
+          
+          !ifndef APP_RUNTIME_DIR
+            !error "APP_RUNTIME_DIR is not defined."
+          !endif
+          
+          !ifndef OUT_DIR
+            !define OUT_DIR "."
+          !endif
+          
+          !define PRODUCT_NAME "88Park Radio"
+          !define PRODUCT_VERSION "1.5.5.1"
+          
+          Name "${PRODUCT_NAME}"
+          Caption "${PRODUCT_NAME} 설치"
+          OutFile "${OUT_DIR}\\88Park_Radio_Setup_v1.5.5.1.exe"
+          InstallDir "$PROGRAMFILES64\\88Park Radio"
+          InstallDirRegKey HKLM "Software\\88Park Radio" "InstallDir"
+          BrandingText "88Park Radio"
+          
+          VIProductVersion "1.5.5.1"
+          VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
+          VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
+          VIAddVersionKey "CompanyName" "88Park"
+          VIAddVersionKey "FileDescription" "88Park Radio Installer"
+          VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
+          
+          Page directory
+          Page instfiles
+          UninstPage uninstConfirm
+          UninstPage instfiles
+          
+          Section "88Park Radio" SEC_MAIN
+            SetShellVarContext all
+            SetOutPath "$INSTDIR"
+          
+            ; 완성된 Electron 앱 폴더를 설치 EXE 안에 직접 포함합니다.
+            ; 7-Zip SFX / RunProgram / SFX용 install.ps1을 사용하지 않습니다.
+            File /r "${APP_RUNTIME_DIR}\\*.*"
+          
+            ; 설정, 즐겨찾기, 알람 데이터는 설치 폴더 안에 기록합니다.
+            CreateDirectory "$INSTDIR\\88ParkRadio_Data"
+            nsExec::ExecToLog 'icacls "$INSTDIR\\88ParkRadio_Data" /grant *S-1-5-32-545:(OI)(CI)M /T /C'
+          
+            StrCpy $0 ""
+            IfFileExists "$INSTDIR\\88Park Radio.exe" 0 +3
+              StrCpy $0 "88Park Radio.exe"
+              Goto exe_ok
+            IfFileExists "$INSTDIR\\88Park_Radio_Portable.exe" 0 +3
+              StrCpy $0 "88Park_Radio_Portable.exe"
+              Goto exe_ok
+          
+            MessageBox MB_ICONSTOP|MB_OK "88Park Radio 실행 파일을 찾지 못했습니다."
+            Abort
+          
+          exe_ok:
+            WriteRegStr HKLM "Software\\88Park Radio" "InstallDir" "$INSTDIR"
+            WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\88Park Radio" "DisplayName" "${PRODUCT_NAME}"
+            WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\88Park Radio" "DisplayVersion" "${PRODUCT_VERSION}"
+            WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\88Park Radio" "Publisher" "88Park"
+            WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\88Park Radio" "InstallLocation" "$INSTDIR"
+            WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\88Park Radio" "UninstallString" '"$INSTDIR\\Uninstall.exe"'
+          
+            WriteUninstaller "$INSTDIR\\Uninstall.exe"
+            CreateDirectory "$SMPROGRAMS\\88Park Radio"
+            CreateShortcut "$SMPROGRAMS\\88Park Radio\\88Park Radio.lnk" "$INSTDIR\\$0"
+            CreateShortcut "$DESKTOP\\88Park Radio.lnk" "$INSTDIR\\$0"
+          
+            MessageBox MB_YESNO|MB_ICONQUESTION "설치가 완료되었습니다.$\r$\n지금 88Park Radio를 실행하시겠습니까?" IDNO done
+            Exec '"$INSTDIR\\$0"'
+          done:
+          SectionEnd
+          
+          Section "Uninstall"
+            SetShellVarContext all
+            StrCpy $0 "0"
+            IfFileExists "$INSTDIR\\88ParkRadio_Data\\*.*" 0 remove_all
+            MessageBox MB_YESNO|MB_ICONQUESTION "즐겨찾기, 알람, 취침 예약 등 사용자 데이터도 삭제하시겠습니까?" IDYES remove_all
+            StrCpy $0 "1"
+            Rename "$INSTDIR\\88ParkRadio_Data" "$TEMP\\88ParkRadio_Data_keep"
+          
+          remove_all:
+            Delete "$DESKTOP\\88Park Radio.lnk"
+            RMDir /r "$SMPROGRAMS\\88Park Radio"
+            DeleteRegKey HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\88Park Radio"
+            DeleteRegKey HKLM "Software\\88Park Radio"
+            RMDir /r "$INSTDIR"
+          
+            StrCmp $0 "1" 0 uninstall_done
+            CreateDirectory "$INSTDIR"
+            Rename "$TEMP\\88ParkRadio_Data_keep" "$INSTDIR\\88ParkRadio_Data"
+          
+          uninstall_done:
+          SectionEnd
+          
+          __NSI__
           cat > patch/README_설치오류수정.txt <<'__README__'
-88Park Radio v1.5.5.1 - 7-Zip installer error fix
-
-증상
-- 설치 EXE 실행 시 7-Zip 창에서 "지정된 파일을 찾을 수 없습니다." 표시
-
-원인
-- 기존 설치 파일이 7-Zip SFX로 압축을 푼 뒤 RunProgram 대상 파일을 찾지 못함
-
-수정
-- 7-Zip SFX 완전 제거
-- NSIS 설치 EXE로 변경
-- npm / electron-builder 사용 안 함
-- Windows에 7-Zip 설치 필요 없음
-
-사용
-1. ZIP 내용물을 88Park Radio v1.5.5 전체 소스 최상위에 덮어씁니다.
-2. BUILD_EXE_INSTALLER_NSIS.CMD 실행
-3. 완성 파일:
-   dist\88Park_Radio_Setup_v1.5.5.1.exe
-
-빌더는 resources\app.asar가 있는 완성 Electron 런타임 폴더를 자동 탐색합니다.
-
-__README__
+          88Park Radio v1.5.5.1 - 7-Zip installer error fix
+          
+          증상
+          - 설치 EXE 실행 시 7-Zip 창에서 "지정된 파일을 찾을 수 없습니다." 표시
+          
+          원인
+          - 기존 설치 파일이 7-Zip SFX로 압축을 푼 뒤 RunProgram 대상 파일을 찾지 못함
+          
+          수정
+          - 7-Zip SFX 완전 제거
+          - NSIS 설치 EXE로 변경
+          - npm / electron-builder 사용 안 함
+          - Windows에 7-Zip 설치 필요 없음
+          
+          사용
+          1. ZIP 내용물을 88Park Radio v1.5.5 전체 소스 최상위에 덮어씁니다.
+          2. BUILD_EXE_INSTALLER_NSIS.CMD 실행
+          3. 완성 파일:
+             dist\\88Park_Radio_Setup_v1.5.5.1.exe
+          
+          빌더는 resources\\app.asar가 있는 완성 Electron 런타임 폴더를 자동 탐색합니다.
+          
+          __README__
       - name: Zip patch
         run: |
           cd patch
